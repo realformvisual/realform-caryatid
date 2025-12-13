@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="utf-8">
+    <title>RealForm AR Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+        
+        model-viewer {
+            width: 100vw;
+            height: 100vh;
+            background-color: #e8e8e8;
+        }
+
+        #ar-button {
+            background-color: white;
+            border-radius: 4px;
+            border: none;
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            padding: 10px 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            display: block; width: 33%; height: 4px; position: absolute;
+            left: 50%; top: 50%; transform: translate(-50%, -50%);
+            border-radius: 2px; background-color: rgba(0, 0, 0, 0.1); overflow: hidden;
+        }
+        .progress-bar.hide { visibility: hidden; transition: visibility 0.3s; }
+        .update-bar {
+            background-color: #333; width: 0%; height: 100%; float: left; transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <model-viewer 
+        src="caryatid.glb" 
+        ar 
+        ar-modes="webxr scene-viewer quick-look" 
+        camera-controls 
+        tone-mapping="neutral" 
+        poster="poster.jpg" 
+        shadow-intensity="2" 
+        exposure="1.15"
+        scale="1 1 1">
+        
+        <div class="progress-bar hide" slot="progress-bar">
+            <div class="update-bar"></div>
+        </div>
+
+        <button slot="ar-button" id="ar-button">
+            View in your space
+        </button>
+
+        <div id="ar-prompt">
+            <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+        </div>
+
+    </model-viewer>
+
+    <script>
+        const modelViewer = document.querySelector('model-viewer');
+        const onProgress = (event) => {
+          const progressBar = event.target.querySelector('.progress-bar');
+          const updatingBar = event.target.querySelector('.update-bar');
+          updatingBar.style.width = `${event.detail.totalProgress * 100}%`;
+          if (event.detail.totalProgress === 1) {
+            progressBar.classList.add('hide');
+          } else {
+            progressBar.classList.remove('hide');
+          }
+        };
+        modelViewer.addEventListener('progress', onProgress);
+    </script>
+
+</body>
+</html>
